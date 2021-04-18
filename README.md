@@ -1,7 +1,7 @@
 btcwallet
 =========
 
-[![Build Status](https://travis-ci.org/btcsuite/btcwallet.png?branch=master)](https://travis-ci.org/btcsuite/btcwallet)
+[![Build Status](https://travis-ci.org/giangnamnabka/btcwallet.png?branch=master)](https://travis-ci.org/giangnamnabka/btcwallet)
 [![Build status](https://ci.appveyor.com/api/projects/status/88nxvckdj8upqr36/branch/master?svg=true)](https://ci.appveyor.com/project/jrick/btcwallet/branch/master)
 
 btcwallet is a daemon handling bitcoin wallet functionality for a
@@ -30,7 +30,7 @@ encryption will extend to transactions as well.
 btcwallet is not an SPV client and requires connecting to a local or
 remote btcd instance for asynchronous blockchain queries and
 notifications over websockets.  Full btcd installation instructions
-can be found [here](https://github.com/btcsuite/btcd).  An alternative
+can be found [here](https://github.com/giangnamnabka/btcd).  An alternative
 SPV mode that is compatible with btcd and Bitcoin Core is planned for
 a future release.
 
@@ -64,9 +64,9 @@ Wallet clients can use one of two RPC servers:
 
 Install the latest MSIs available here:
 
-https://github.com/btcsuite/btcd/releases
+https://github.com/giangnamnabka/btcd/releases
 
-https://github.com/btcsuite/btcwallet/releases
+https://github.com/giangnamnabka/btcwallet/releases
 
 ### Windows/Linux/BSD/POSIX - Build from source
 
@@ -88,7 +88,7 @@ recommended that `GOPATH` is set to a directory in your home directory such as
 - Run the following commands to obtain btcwallet, all dependencies, and install it:
 
 ```bash
-$ cd $GOPATH/src/github.com/btcsuite/btcwallet
+$ cd $GOPATH/src/github.com/giangnamnabka/btcwallet
 $ GO111MODULE=on go install -v . ./cmd/...
 ```
 
@@ -107,7 +107,7 @@ Install a newer MSI
 - Run the following commands to update btcd, all dependencies, and install it:
 
 ```bash
-$ cd $GOPATH/src/github.com/btcsuite/btcwallet
+$ cd $GOPATH/src/github.com/giangnamnabka/btcwallet
 $ git pull
 $ GO111MODULE=on go install -v . ./cmd/...
 ```
@@ -158,15 +158,15 @@ PS> $editor $env:LOCALAPPDATA\Btcwallet\btcwallet.conf
 
 Linux/BSD/POSIX (Installed from source):
 ```bash
-$ cp $GOPATH/src/github.com/btcsuite/btcd/sample-btcd.conf ~/.btcd/btcd.conf
-$ cp $GOPATH/src/github.com/btcsuite/btcwallet/sample-btcwallet.conf ~/.btcwallet/btcwallet.conf
+$ cp $GOPATH/src/github.com/giangnamnabka/btcd/sample-btcd.conf ~/.btcd/btcd.conf
+$ cp $GOPATH/src/github.com/giangnamnabka/btcwallet/sample-btcwallet.conf ~/.btcwallet/btcwallet.conf
 $ $EDITOR ~/.btcd/btcd.conf
 $ $EDITOR ~/.btcwallet/btcwallet.conf
 ```
 
 ## Issue Tracker
 
-The [integrated github issue tracker](https://github.com/btcsuite/btcwallet/issues)
+The [integrated github issue tracker](https://github.com/giangnamnabka/btcwallet/issues)
 is used for this project.
 
 ## GPG Verification Key
