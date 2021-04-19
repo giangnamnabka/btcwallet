@@ -42,4 +42,14 @@ replace github.com/btcsuite/btcutil => github.com/giangnamnabka/btcutil v1.0.3-0
 
 replace github.com/btcsuite/btcutil/psbt => github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210419010950-7174e438d77e
 
+// replace github.com/btcsuite/btcwallet/wallet/txauthor => github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210419054815-5ade0ac8c636
+
+// replace github.com/btcsuite/btcwallet/wallet/txrules => github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210419054815-5ade0ac8c636
+
+// replace github.com/btcsuite/btcwallet/wallet/txsizes => github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210419054815-5ade0ac8c636
+
+// replace github.com/btcsuite/btcwallet/walletdb => github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210419081531-9b3e2e006d1f
+
+// replace github.com/btcsuite/btcwallet/wtxmgr => github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210419054815-5ade0ac8c636
+
 go 1.13
