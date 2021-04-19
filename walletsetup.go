@@ -11,15 +11,15 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcwallet/internal/legacy/keystore"
-	"github.com/giangnamnabka/btcwallet/internal/prompt"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
-	"github.com/giangnamnabka/btcwallet/wallet"
-	"github.com/giangnamnabka/btcwallet/walletdb"
-	_ "github.com/giangnamnabka/btcwallet/walletdb/bdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcwallet/internal/legacy/keystore"
+	"github.com/btcsuite/btcwallet/internal/prompt"
+	"github.com/btcsuite/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcwallet/wallet"
+	"github.com/btcsuite/btcwallet/walletdb"
+	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
 )
 
 // networkDir returns the directory name of a network directory to hold wallet

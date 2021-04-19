@@ -4,7 +4,7 @@ import (
 	"errors"
 	"sort"
 
-	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/btcsuite/btcwallet/walletdb"
 )
 
 var (

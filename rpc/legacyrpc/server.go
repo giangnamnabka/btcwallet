@@ -19,9 +19,9 @@ import (
 	"time"
 
 	"github.com/btcsuite/websocket"
-	"github.com/giangnamnabka/btcd/btcjson"
-	"github.com/giangnamnabka/btcwallet/chain"
-	"github.com/giangnamnabka/btcwallet/wallet"
+	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcwallet/chain"
+	"github.com/btcsuite/btcwallet/wallet"
 )
 
 type websocketClient struct {
