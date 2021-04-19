@@ -36,10 +36,10 @@ replace github.com/btcsuite/btcwallet/wallet/txrules => ./wallet/txrules
 
 replace github.com/btcsuite/btcwallet/wallet/txsizes => ./wallet/txsizes
 
-replace github.com/btcsuite/btcd => github.com/giangnamnabka/btcd v0.21.0-beta
+replace github.com/btcsuite/btcd => github.com/giangnamnabka/btcd v0.21.0-beta.0.20210419050421-b04eae72c863
 
-replace github.com/btcsuite/btcutil => github.com/giangnamnabka/btcutil v1.0.2
+replace github.com/btcsuite/btcutil => github.com/giangnamnabka/btcutil v1.0.3-0.20210419010950-7174e438d77e
 
-replace github.com/btcsuite/btcutil/psbt => github.com/giangnamnabka/btcutil/psbt v1.0.2
+replace github.com/btcsuite/btcutil/psbt => github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210419010950-7174e438d77e
 
 go 1.13

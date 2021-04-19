@@ -1,4 +1,4 @@
-module github.com/btcsuite/btcwallet/wallet/txsizes
+module github.com/giangnamnabka/btcwallet/wallet/txsizes
 
 go 1.12
 
@@ -15,3 +15,5 @@ require (
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/yaml.v2 v2.2.2 // indirect
 )
+
+replace github.com/btcsuite/btcd => github.com/giangnamnabka/btcd v0.21.0-beta.0.20210419050421-b04eae72c863
