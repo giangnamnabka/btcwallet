@@ -1,4 +1,4 @@
-module github.com/btcsuite/btcwallet
+module github.com/giangnamnabka/btcwallet
 
 require (
 	github.com/btcsuite/btcd v0.21.0-beta.0.20210316172410-f86ae60936d7
