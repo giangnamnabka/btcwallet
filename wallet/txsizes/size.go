@@ -154,59 +154,20 @@ func EstimateSerializeSize(inputCount int, txOuts []*wire.TxOut, addChangeOutput
 		changeSize
 }
 
-// // EstimateVirtualSize returns a worst case virtual size estimate for a
-// // signed transaction that spends the given number of P2PKH, P2WPKH and
-// // (nested) P2SH-P2WPKH outputs, and contains each transaction output
-// // from txOuts. The estimate is incremented for an additional P2PKH
-// // change output if addChangeOutput is true.
-// func EstimateVirtualSize(numP2PKHIns, numP2WPKHIns, numNestedP2WPKHIns int,
-// 	txOuts []*wire.TxOut, changeScriptSize int) int {
-// 	outputCount := len(txOuts)
-
-// 	changeOutputSize := 0
-// 	if changeScriptSize > 0 {
-// 		changeOutputSize = 8 +
-// 			wire.VarIntSerializeSize(uint64(changeScriptSize)) +
-// 			changeScriptSize
-// 		outputCount++
-// 	}
-
-// 	// Version 4 bytes + LockTime 4 bytes + Serialized var int size for the
-// 	// number of transaction inputs and outputs + size of redeem scripts +
-// 	// the size out the serialized outputs and change.
-// 	baseSize := 8 +
-// 		wire.VarIntSerializeSize(
-// 			uint64(numP2PKHIns+numP2WPKHIns+numNestedP2WPKHIns)) +
-// 		wire.VarIntSerializeSize(uint64(len(txOuts))) +
-// 		numP2PKHIns*RedeemP2PKHInputSize +
-// 		numP2WPKHIns*RedeemP2WPKHInputSize +
-// 		numNestedP2WPKHIns*RedeemNestedP2WPKHInputSize +
-// 		SumOutputSerializeSizes(txOuts) +
-// 		changeOutputSize
-
-// 	// If this transaction has any witness inputs, we must count the
-// 	// witness data.
-// 	witnessWeight := 0
-// 	if numP2WPKHIns+numNestedP2WPKHIns > 0 {
-// 		// Additional 2 weight units for segwit marker + flag.
-// 		witnessWeight = 2 +
-// 			wire.VarIntSerializeSize(
-// 				uint64(numP2WPKHIns+numNestedP2WPKHIns)) +
-// 			numP2WPKHIns*RedeemP2WPKHInputWitnessWeight +
-// 			numNestedP2WPKHIns*RedeemP2WPKHInputWitnessWeight
-// 	}
-
-// 	// We add 3 to the witness weight to make sure the result is
-// 	// always rounded up.
-// 	return baseSize + (witnessWeight+3)/blockchain.WitnessScaleFactor
-// }
+// EstimateVirtualSize returns a worst case virtual size estimate for a
+// signed transaction that spends the given number of P2PKH, P2WPKH and
+// (nested) P2SH-P2WPKH outputs, and contains each transaction output
+// from txOuts. The estimate is incremented for an additional P2PKH
+// change output if addChangeOutput is true.
 func EstimateVirtualSize(numP2PKHIns, numP2WPKHIns, numNestedP2WPKHIns int,
-	txOuts []*wire.TxOut, addChangeOutput bool) int {
-	changeSize := 0
+	txOuts []*wire.TxOut, changeScriptSize int) int {
 	outputCount := len(txOuts)
-	if addChangeOutput {
-		// We are always using P2WPKH as change output.
-		changeSize = P2WPKHOutputSize
+
+	changeOutputSize := 0
+	if changeScriptSize > 0 {
+		changeOutputSize = 8 +
+			wire.VarIntSerializeSize(uint64(changeScriptSize)) +
+			changeScriptSize
 		outputCount++
 	}
 
@@ -221,7 +182,7 @@ func EstimateVirtualSize(numP2PKHIns, numP2WPKHIns, numNestedP2WPKHIns int,
 		numP2WPKHIns*RedeemP2WPKHInputSize +
 		numNestedP2WPKHIns*RedeemNestedP2WPKHInputSize +
 		SumOutputSerializeSizes(txOuts) +
-		changeSize
+		changeOutputSize
 
 	// If this transaction has any witness inputs, we must count the
 	// witness data.

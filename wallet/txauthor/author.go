@@ -70,108 +70,35 @@ type ChangeSource struct {
 	ScriptSize int
 }
 
-// // NewUnsignedTransaction creates an unsigned transaction paying to one or more
-// // non-change outputs.  An appropriate transaction fee is included based on the
-// // transaction size.
-// //
-// // Transaction inputs are chosen from repeated calls to fetchInputs with
-// // increasing targets amounts.
-// //
-// // If any remaining output value can be returned to the wallet via a change
-// // output without violating mempool dust rules, a P2WPKH change output is
-// // appended to the transaction outputs.  Since the change output may not be
-// // necessary, fetchChange is called zero or one times to generate this script.
-// // This function must return a P2WPKH script or smaller, otherwise fee estimation
-// // will be incorrect.
-// //
-// // If successful, the transaction, total input value spent, and all previous
-// // output scripts are returned.  If the input source was unable to provide
-// // enough input value to pay for every output any any necessary fees, an
-// // InputSourceError is returned.
-// //
-// // BUGS: Fee estimation may be off when redeeming non-compressed P2PKH outputs.
-// func NewUnsignedTransaction(outputs []*wire.TxOut, feeRatePerKb btcutil.Amount,
-// 	fetchInputs InputSource, changeSource *ChangeSource) (*AuthoredTx, error) {
-
-// 	targetAmount := SumOutputValues(outputs)
-// 	estimatedSize := txsizes.EstimateVirtualSize(
-// 		0, 1, 0, outputs, changeSource.ScriptSize,
-// 	)
-// 	targetFee := txrules.FeeForSerializeSize(feeRatePerKb, estimatedSize)
-
-// 	for {
-// 		inputAmount, inputs, inputValues, scripts, err := fetchInputs(targetAmount + targetFee)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-// 		if inputAmount < targetAmount+targetFee {
-// 			return nil, insufficientFundsError{}
-// 		}
-
-// 		// We count the types of inputs, which we'll use to estimate
-// 		// the vsize of the transaction.
-// 		var nested, p2wpkh, p2pkh int
-// 		for _, pkScript := range scripts {
-// 			switch {
-// 			// If this is a p2sh output, we assume this is a
-// 			// nested P2WKH.
-// 			case txscript.IsPayToScriptHash(pkScript):
-// 				nested++
-// 			case txscript.IsPayToWitnessPubKeyHash(pkScript):
-// 				p2wpkh++
-// 			default:
-// 				p2pkh++
-// 			}
-// 		}
-
-// 		maxSignedSize := txsizes.EstimateVirtualSize(
-// 			p2pkh, p2wpkh, nested, outputs, changeSource.ScriptSize,
-// 		)
-// 		maxRequiredFee := txrules.FeeForSerializeSize(feeRatePerKb, maxSignedSize)
-// 		remainingAmount := inputAmount - targetAmount
-// 		if remainingAmount < maxRequiredFee {
-// 			targetFee = maxRequiredFee
-// 			continue
-// 		}
-
-// 		unsignedTransaction := &wire.MsgTx{
-// 			Version:  wire.TxVersion,
-// 			TxIn:     inputs,
-// 			TxOut:    outputs,
-// 			LockTime: 0,
-// 		}
-
-// 		changeIndex := -1
-// 		changeAmount := inputAmount - targetAmount - maxRequiredFee
-// 		if changeAmount != 0 && !txrules.IsDustAmount(changeAmount,
-// 			changeSource.ScriptSize, txrules.DefaultRelayFeePerKb) {
-
-// 			changeScript, err := changeSource.NewScript()
-// 			if err != nil {
-// 				return nil, err
-// 			}
-// 			change := wire.NewTxOut(int64(changeAmount), changeScript)
-// 			l := len(outputs)
-// 			unsignedTransaction.TxOut = append(outputs[:l:l], change)
-// 			changeIndex = l
-// 		}
-
-// 		return &AuthoredTx{
-// 			Tx:              unsignedTransaction,
-// 			PrevScripts:     scripts,
-// 			PrevInputValues: inputValues,
-// 			TotalInput:      inputAmount,
-// 			ChangeIndex:     changeIndex,
-// 		}, nil
-// 	}
-// }
-
-func NewUnsignedTransaction(outputs []*wire.TxOut, relayFeePerKb btcutil.Amount,
-	fetchInputs InputSource, fetchChange ChangeSource) (*AuthoredTx, error) {
+// NewUnsignedTransaction creates an unsigned transaction paying to one or more
+// non-change outputs.  An appropriate transaction fee is included based on the
+// transaction size.
+//
+// Transaction inputs are chosen from repeated calls to fetchInputs with
+// increasing targets amounts.
+//
+// If any remaining output value can be returned to the wallet via a change
+// output without violating mempool dust rules, a P2WPKH change output is
+// appended to the transaction outputs.  Since the change output may not be
+// necessary, fetchChange is called zero or one times to generate this script.
+// This function must return a P2WPKH script or smaller, otherwise fee estimation
+// will be incorrect.
+//
+// If successful, the transaction, total input value spent, and all previous
+// output scripts are returned.  If the input source was unable to provide
+// enough input value to pay for every output any any necessary fees, an
+// InputSourceError is returned.
+//
+// BUGS: Fee estimation may be off when redeeming non-compressed P2PKH outputs.
+func NewUnsignedTransaction(outputs []*wire.TxOut, feeRatePerKb btcutil.Amount,
+	fetchInputs InputSource, changeSource *ChangeSource) (*AuthoredTx, error) {
 
 	targetAmount := SumOutputValues(outputs)
-	estimatedSize := txsizes.EstimateVirtualSize(0, 1, 0, outputs, true)
-	targetFee := txrules.FeeForSerializeSize(relayFeePerKb, estimatedSize)
+	// estimatedSize := txsizes.EstimateVirtualSize(
+	// 	0, 1, 0, outputs, changeSource.ScriptSize,
+	// )
+	estimatedSize := txsizes.EstimateSerializeSize(1, outputs, true)
+	targetFee := txrules.FeeForSerializeSize(feeRatePerKb, estimatedSize)
 
 	for {
 		inputAmount, inputs, inputValues, scripts, err := fetchInputs(targetAmount + targetFee)
@@ -198,9 +125,11 @@ func NewUnsignedTransaction(outputs []*wire.TxOut, relayFeePerKb btcutil.Amount,
 			}
 		}
 
-		maxSignedSize := txsizes.EstimateVirtualSize(p2pkh, p2wpkh,
-			nested, outputs, true)
-		maxRequiredFee := txrules.FeeForSerializeSize(relayFeePerKb, maxSignedSize)
+		// maxSignedSize := txsizes.EstimateVirtualSize(
+		// 	p2pkh, p2wpkh, nested, outputs, changeSource.ScriptSize,
+		// )
+		maxSignedSize := txsizes.EstimateSerializeSize(len(scripts), outputs, true)
+		maxRequiredFee := txrules.FeeForSerializeSize(feeRatePerKb, maxSignedSize)
 		remainingAmount := inputAmount - targetAmount
 		if remainingAmount < maxRequiredFee {
 			targetFee = maxRequiredFee
@@ -213,18 +142,17 @@ func NewUnsignedTransaction(outputs []*wire.TxOut, relayFeePerKb btcutil.Amount,
 			TxOut:    outputs,
 			LockTime: 0,
 		}
+
 		changeIndex := -1
 		changeAmount := inputAmount - targetAmount - maxRequiredFee
 		if changeAmount != 0 && !txrules.IsDustAmount(changeAmount,
-			txsizes.P2WPKHPkScriptSize, relayFeePerKb) {
-			changeScript, err := fetchChange()
+			changeSource.ScriptSize, txrules.DefaultRelayFeePerKb) {
+
+			changeScript, err := changeSource.NewScript()
 			if err != nil {
 				return nil, err
 			}
-			if len(changeScript) > txsizes.P2WPKHPkScriptSize {
-				return nil, errors.New("fee estimation requires change " +
-					"scripts no larger than P2WPKH output scripts")
-			}
+			
 			change := wire.NewTxOut(int64(changeAmount), changeScript)
 			l := len(outputs)
 			unsignedTransaction.TxOut = append(outputs[:l:l], change)
