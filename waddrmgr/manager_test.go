@@ -15,12 +15,12 @@ import (
 	"time"
 
 	"github.com/davecgh/go-spew/spew"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
-	"github.com/btcsuite/btcwallet/snacl"
-	"github.com/btcsuite/btcwallet/walletdb"
+	"github.com/giangnamnabka/btcd/chaincfg"
+	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcutil/hdkeychain"
+	"github.com/giangnamnabka/btcwallet/snacl"
+	"github.com/giangnamnabka/btcwallet/walletdb"
 )
 
 // failingCryptoKey is an implementation of the EncryptorDecryptor interface

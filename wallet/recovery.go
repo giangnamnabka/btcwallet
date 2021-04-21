@@ -3,15 +3,15 @@ package wallet
 import (
 	"time"
 
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/walletdb"
-	"github.com/btcsuite/btcwallet/wtxmgr"
+	"github.com/giangnamnabka/btcd/chaincfg"
+	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
+	"github.com/giangnamnabka/btcd/txscript"
+	"github.com/giangnamnabka/btcd/wire"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcutil/hdkeychain"
+	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/giangnamnabka/btcwallet/wtxmgr"
 )
 
 // RecoveryManager maintains the state required to recover previously used
