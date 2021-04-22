@@ -4,9 +4,9 @@ require (
 	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f
 	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792
 	github.com/davecgh/go-spew v1.1.1
-	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210421053028-91430c8dc7b0
-	github.com/giangnamnabka/btcutil v1.0.3-0.20210421053153-55ad5ef66f21
-	github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210421053153-55ad5ef66f21
+	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210422182616-7cc8292ed1fd
+	github.com/giangnamnabka/btcutil v1.0.3-0.20210422183801-1e4dd2b8f1ba
+	github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210422183801-1e4dd2b8f1ba
 	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210420072038-a00c5ff72602
 	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210420072038-a00c5ff72602
 	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210420065930-67219ae54cf3
@@ -36,10 +36,10 @@ replace github.com/giangnamnabka/btcwallet/wallet/txrules => ./wallet/txrules
 
 replace github.com/giangnamnabka/btcwallet/wallet/txsizes => ./wallet/txsizes
 
-replace github.com/giangnamnabka/btcd v0.21.0-beta.0.20210421053028-91430c8dc7b0 => /home/tinhnguyenhn/anyswap/20210421_2/btcd
+// replace github.com/giangnamnabka/btcd v0.21.0-beta.0.20210421053028-91430c8dc7b0 => /home/tinhnguyenhn/anyswap/20210421_2/btcd
 
-replace github.com/giangnamnabka/btcutil v1.0.3-0.20210421053153-55ad5ef66f21 => /home/tinhnguyenhn/anyswap/20210421_2/btcutil
+// replace github.com/giangnamnabka/btcutil v1.0.3-0.20210421053153-55ad5ef66f21 => /home/tinhnguyenhn/anyswap/20210421_2/btcutil
 
-replace github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210421053153-55ad5ef66f21 => /home/tinhnguyenhn/anyswap/20210421_2/btcutil/psbt
+// replace github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210421053153-55ad5ef66f21 => /home/tinhnguyenhn/anyswap/20210421_2/btcutil/psbt
 
 go 1.13
