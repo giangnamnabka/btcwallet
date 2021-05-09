@@ -39,7 +39,7 @@ func testWallet(t *testing.T) (*Wallet, func()) {
 	privPass := []byte("world")
 
 	loader := NewLoader(
-		&chaincfg.TestNet3Params, dir, true, defaultDBTimeout, 250,
+		&chaincfg.TestNet4Params, dir, true, defaultDBTimeout, 250,
 	)
 	w, err := loader.CreateNewWallet(pubPass, privPass, seed, time.Now())
 	if err != nil {
@@ -70,7 +70,7 @@ func testWalletWatchingOnly(t *testing.T) (*Wallet, func()) {
 
 	pubPass := []byte("hello")
 	loader := NewLoader(
-		&chaincfg.TestNet3Params, dir, true, defaultDBTimeout, 250,
+		&chaincfg.TestNet4Params, dir, true, defaultDBTimeout, 250,
 	)
 	w, err := loader.CreateNewWatchingOnlyWallet(pubPass, time.Now())
 	if err != nil {

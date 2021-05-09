@@ -17,7 +17,7 @@ import (
 	"github.com/giangnamnabka/btcd/peer"
 	"github.com/giangnamnabka/btcd/wire"
 	"github.com/giangnamnabka/btcutil"
-	"github.com/lightninglabs/neutrino/query"
+	"github.com/giangnamnabka/neutrino/query"
 	"github.com/lightningnetwork/lnd/ticker"
 )
 

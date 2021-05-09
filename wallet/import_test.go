@@ -36,7 +36,7 @@ func deriveAcctPubKey(t *testing.T, root *hdkeychain.ExtendedKey,
 	// non-standard methods. We need to convert them to standard, neuter,
 	// then convert them back with the target extended public key version.
 	pubVersionBytes := make([]byte, 4)
-	copy(pubVersionBytes, chaincfg.TestNet3Params.HDPublicKeyID[:])
+	copy(pubVersionBytes, chaincfg.TestNet4Params.HDPublicKeyID[:])
 	switch {
 	case strings.HasPrefix(root.String(), "uprv"):
 		binary.BigEndian.PutUint32(pubVersionBytes, uint32(
@@ -50,7 +50,7 @@ func deriveAcctPubKey(t *testing.T, root *hdkeychain.ExtendedKey,
 	}
 
 	currentKey, err = currentKey.CloneWithVersion(
-		chaincfg.TestNet3Params.HDPrivateKeyID[:],
+		chaincfg.TestNet4Params.HDPrivateKeyID[:],
 	)
 	require.NoError(t, err)
 	currentKey, err = currentKey.Neuter()
@@ -251,7 +251,7 @@ func testImportAccount(t *testing.T, w *Wallet, tc *testCase, watchOnly bool,
 	case waddrmgr.NestedWitnessPubKey:
 		witnessAddr, err := btcutil.NewAddressWitnessPubKeyHash(
 			btcutil.Hash160(acct3ExternalPub.SerializeCompressed()),
-			&chaincfg.TestNet3Params,
+			&chaincfg.TestNet4Params,
 		)
 		require.NoError(t, err)
 
@@ -259,14 +259,14 @@ func testImportAccount(t *testing.T, w *Wallet, tc *testCase, watchOnly bool,
 		require.NoError(t, err)
 
 		addr, err = btcutil.NewAddressScriptHash(
-			witnessProg, &chaincfg.TestNet3Params,
+			witnessProg, &chaincfg.TestNet4Params,
 		)
 		require.NoError(t, err)
 
 	case waddrmgr.WitnessPubKey:
 		addr, err = btcutil.NewAddressWitnessPubKeyHash(
 			btcutil.Hash160(acct3ExternalPub.SerializeCompressed()),
-			&chaincfg.TestNet3Params,
+			&chaincfg.TestNet4Params,
 		)
 		require.NoError(t, err)
 

@@ -187,7 +187,7 @@ func Example_basicUsage() {
 		fmt.Println(err)
 		return
 	}
-	s, err := Open(b, &chaincfg.TestNet3Params)
+	s, err := Open(b, &chaincfg.TestNet4Params)
 	if err != nil {
 		fmt.Println(err)
 		return

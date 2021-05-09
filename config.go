@@ -20,8 +20,8 @@ import (
 	"github.com/giangnamnabka/btcwallet/internal/legacy/keystore"
 	"github.com/giangnamnabka/btcwallet/netparams"
 	"github.com/giangnamnabka/btcwallet/wallet"
+	"github.com/giangnamnabka/neutrino"
 	flags "github.com/jessevdk/go-flags"
-	"github.com/lightninglabs/neutrino"
 )
 
 const (
@@ -358,7 +358,7 @@ func loadConfig() (*config, []string, error) {
 	// Multiple networks can't be selected simultaneously.
 	numNets := 0
 	if cfg.TestNet3 {
-		activeNet = &netparams.TestNet3Params
+		activeNet = &netparams.TestNet4Params
 		numNets++
 	}
 	if cfg.SimNet {

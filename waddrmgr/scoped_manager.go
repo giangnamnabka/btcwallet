@@ -7,7 +7,6 @@ import (
 
 	"github.com/giangnamnabka/btcd/btcec"
 	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/txscript"
 	"github.com/giangnamnabka/btcd/wire"
 	"github.com/giangnamnabka/btcutil"
 	"github.com/giangnamnabka/btcutil/hdkeychain"
@@ -1806,19 +1805,19 @@ func (s *ScopedKeyManager) importPublicKey(ns walletdb.ReadWriteBucket,
 	case PubKeyHash, WitnessPubKey:
 		addressID = btcutil.Hash160(serializedPubKey)
 
-	case NestedWitnessPubKey:
-		pubKeyHash := btcutil.Hash160(serializedPubKey)
-		p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
-			pubKeyHash, s.rootManager.chainParams,
-		)
-		if err != nil {
-			return err
-		}
-		witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
-		if err != nil {
-			return err
-		}
-		addressID = btcutil.Hash160(witnessScript)
+	// case NestedWitnessPubKey:
+	// 	pubKeyHash := btcutil.Hash160(serializedPubKey)
+	// 	p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
+	// 		pubKeyHash, s.rootManager.chainParams,
+	// 	)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	addressID = btcutil.Hash160(witnessScript)
 
 	default:
 		return fmt.Errorf("unsupported address type %v", addrType)

@@ -6,7 +6,7 @@ package chain
 
 import (
 	"github.com/btcsuite/btclog"
-	"github.com/lightninglabs/neutrino/query"
+	"github.com/giangnamnabka/neutrino/query"
 )
 
 // log is a logger that is initialized with no output filters.  This
