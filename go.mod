@@ -10,7 +10,7 @@ require (
 	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210420072038-a00c5ff72602
 	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210420072038-a00c5ff72602
 	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210420065930-67219ae54cf3
-	github.com/giangnamnabka/btcwallet/walletdb v1.3.4
+	github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210509082739-8bea2f9bb3c9
 	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.0
 	github.com/giangnamnabka/neutrino v0.11.1-0.20210509081940-d0c71e86a99d
 	github.com/golang/protobuf v1.2.0
