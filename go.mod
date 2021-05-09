@@ -7,12 +7,12 @@ require (
 	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210509080720-d664d3d3dfd7
 	github.com/giangnamnabka/btcutil v1.0.3-0.20210509081240-f80751d24cbd
 	github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210509081240-f80751d24cbd
-	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210420072038-a00c5ff72602
+	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210509082739-8bea2f9bb3c9
 	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210420072038-a00c5ff72602
 	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210420065930-67219ae54cf3
 	github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210509082739-8bea2f9bb3c9
-	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.0
-	github.com/giangnamnabka/neutrino v0.11.1-0.20210509081940-d0c71e86a99d
+	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.1-0.20210509084126-9f955c3d56f3
+	github.com/giangnamnabka/neutrino v0.11.1-0.20210509084448-40591f1b809d
 	github.com/golang/protobuf v1.2.0
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jrick/logrotate v1.0.0
