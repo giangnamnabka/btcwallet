@@ -3,7 +3,7 @@ module github.com/giangnamnabka/btcwallet/wallet/txsizes
 go 1.12
 
 require (
-	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210509080720-d664d3d3dfd7
+	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210510094638-1354d7f1a2de
 	github.com/kr/pretty v0.1.0 // indirect
 	golang.org/x/sync v0.0.0-20181221193216-37e7f081c4d4 // indirect
 	golang.org/x/sys v0.0.0-20190904154756-749cb33beabd // indirect
