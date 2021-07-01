@@ -5,13 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
-	"github.com/btcsuite/btcwallet/netparams"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/walletdb"
+	"github.com/giangnamnabka/btcd/btcec"
+	"github.com/giangnamnabka/btcd/wire"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcutil/hdkeychain"
+	"github.com/giangnamnabka/btcwallet/netparams"
+	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/giangnamnabka/btcwallet/walletdb"
 )
 
 const (

@@ -9,13 +9,13 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/btcsuite/btcd/btcjson"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/wtxmgr"
+	"github.com/giangnamnabka/btcd/btcjson"
+	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
+	"github.com/giangnamnabka/btcd/txscript"
+	"github.com/giangnamnabka/btcd/wire"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/giangnamnabka/btcwallet/wtxmgr"
 )
 
 var (
@@ -1271,7 +1271,7 @@ func (c *BitcoindClient) filterTx(tx *wire.MsgTx,
 		// watch list encoded as an address. To do so, we'll re-derive
 		// the pkScript of the output the input is attempting to spend.
 		pkScript, err := txscript.ComputePkScript(
-			txIn.SignatureScript, txIn.Witness,
+			txIn.SignatureScript,
 		)
 		if err != nil {
 			// Non-standard outputs can be safely skipped.

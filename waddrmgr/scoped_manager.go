@@ -5,15 +5,14 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcutil/hdkeychain"
-	"github.com/btcsuite/btcwallet/internal/zero"
-	"github.com/btcsuite/btcwallet/netparams"
-	"github.com/btcsuite/btcwallet/walletdb"
+	"github.com/giangnamnabka/btcd/btcec"
+	"github.com/giangnamnabka/btcd/chaincfg"
+	"github.com/giangnamnabka/btcd/wire"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcutil/hdkeychain"
+	"github.com/giangnamnabka/btcwallet/internal/zero"
+	"github.com/giangnamnabka/btcwallet/netparams"
+	"github.com/giangnamnabka/btcwallet/walletdb"
 )
 
 // HDVersion represents the different supported schemes of hierarchical
@@ -1809,22 +1808,22 @@ func (s *ScopedKeyManager) importPublicKey(ns walletdb.ReadWriteBucket,
 	// Compute the addressID for our key based on its address type.
 	var addressID []byte
 	switch addrType {
-	case PubKeyHash, WitnessPubKey:
+	case PubKeyHash:
 		addressID = btcutil.Hash160(serializedPubKey)
 
-	case NestedWitnessPubKey:
-		pubKeyHash := btcutil.Hash160(serializedPubKey)
-		p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
-			pubKeyHash, s.rootManager.chainParams,
-		)
-		if err != nil {
-			return err
-		}
-		witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
-		if err != nil {
-			return err
-		}
-		addressID = btcutil.Hash160(witnessScript)
+	// case NestedWitnessPubKey:
+	// 	pubKeyHash := btcutil.Hash160(serializedPubKey)
+	// 	p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
+	// 		pubKeyHash, s.rootManager.chainParams,
+	// 	)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
+	// 	if err != nil {
+	// 		return err
+	// 	}
+	// 	addressID = btcutil.Hash160(witnessScript)
 
 	default:
 		return fmt.Errorf("unsupported address type %v", addrType)

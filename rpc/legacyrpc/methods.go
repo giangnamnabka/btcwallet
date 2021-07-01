@@ -15,19 +15,19 @@ import (
 	"sync"
 	"time"
 
-	"github.com/btcsuite/btcd/btcec"
-	"github.com/btcsuite/btcd/btcjson"
-	"github.com/btcsuite/btcd/chaincfg"
-	"github.com/btcsuite/btcd/chaincfg/chainhash"
-	"github.com/btcsuite/btcd/rpcclient"
-	"github.com/btcsuite/btcd/txscript"
-	"github.com/btcsuite/btcd/wire"
-	"github.com/btcsuite/btcutil"
-	"github.com/btcsuite/btcwallet/chain"
-	"github.com/btcsuite/btcwallet/waddrmgr"
-	"github.com/btcsuite/btcwallet/wallet"
-	"github.com/btcsuite/btcwallet/wallet/txrules"
-	"github.com/btcsuite/btcwallet/wtxmgr"
+	"github.com/giangnamnabka/btcd/btcec"
+	"github.com/giangnamnabka/btcd/btcjson"
+	"github.com/giangnamnabka/btcd/chaincfg"
+	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
+	"github.com/giangnamnabka/btcd/rpcclient"
+	"github.com/giangnamnabka/btcd/txscript"
+	"github.com/giangnamnabka/btcd/wire"
+	"github.com/giangnamnabka/btcutil"
+	"github.com/giangnamnabka/btcwallet/chain"
+	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/giangnamnabka/btcwallet/wallet"
+	"github.com/giangnamnabka/btcwallet/wallet/txrules"
+	"github.com/giangnamnabka/btcwallet/wtxmgr"
 )
 
 const (
@@ -1361,8 +1361,7 @@ func sendPairs(w *wallet.Wallet, amounts map[string]btcutil.Amount,
 		return "", err
 	}
 	tx, err := w.SendOutputs(
-		outputs, &keyScope, account, minconf, feeSatPerKb,
-		wallet.CoinSelectionLargest, "",
+		outputs, &keyScope, account, minconf, feeSatPerKb, "",
 	)
 	if err != nil {
 		if err == txrules.ErrAmountNegative {
