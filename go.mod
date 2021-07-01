@@ -1,17 +1,17 @@
 module github.com/giangnamnabka/btcwallet
 
 require (
+	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f
+	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792
+	github.com/davecgh/go-spew v1.1.1
 	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210701074249-18e63e74168c
 	github.com/giangnamnabka/btcutil v1.0.3-0.20210701074624-a38615d6d2f8
 	github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210701074624-a38615d6d2f8
-	github.com/btcsuite/btclog v0.0.0-20170628155309-84c8d2346e9f
-	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.0
-	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.0
-	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.0
-	github.com/giangnamnabka/btcwallet/walletdb v1.3.5
-	github.com/giangnamnabka/btcwallet/wtxmgr v1.3.0
-	github.com/btcsuite/websocket v0.0.0-20150119174127-31079b680792
-	github.com/davecgh/go-spew v1.1.1
+	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.1-0.20210701095921-acdc48f2a217
 	github.com/golang/protobuf v1.4.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jrick/logrotate v1.0.0
