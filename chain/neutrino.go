@@ -16,8 +16,8 @@ import (
 	"github.com/giangnamnabka/btcutil/gcs/builder"
 	"github.com/giangnamnabka/btcwallet/waddrmgr"
 	"github.com/giangnamnabka/btcwallet/wtxmgr"
-	"github.com/lightninglabs/neutrino"
-	"github.com/lightninglabs/neutrino/headerfs"
+	"github.com/giangnamnabka/neutrino"
+	"github.com/giangnamnabka/neutrino/headerfs"
 )
 
 // NeutrinoClient is an implementation of the btcwalet chain.Interface interface.

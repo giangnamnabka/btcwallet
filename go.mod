@@ -7,17 +7,17 @@ require (
 	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210701074249-18e63e74168c
 	github.com/giangnamnabka/btcutil v1.0.3-0.20210701074624-a38615d6d2f8
 	github.com/giangnamnabka/btcutil/psbt v1.0.3-0.20210701074624-a38615d6d2f8
-	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/wallet/txauthor v1.0.1-0.20210701214315-4fa4ee405c35
 	github.com/giangnamnabka/btcwallet/wallet/txrules v1.0.1-0.20210701095921-acdc48f2a217
 	github.com/giangnamnabka/btcwallet/wallet/txsizes v1.0.1-0.20210701095921-acdc48f2a217
-	github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210701095921-acdc48f2a217
-	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.1-0.20210701095921-acdc48f2a217
+	github.com/giangnamnabka/btcwallet/walletdb v1.3.5-0.20210701214315-4fa4ee405c35
+	github.com/giangnamnabka/btcwallet/wtxmgr v1.2.1-0.20210701214315-4fa4ee405c35
+	github.com/giangnamnabka/neutrino v0.11.1-0.20210701215338-52c374f8a24a
 	github.com/golang/protobuf v1.4.2
 	github.com/jessevdk/go-flags v1.4.0
 	github.com/jrick/logrotate v1.0.0
 	github.com/kkdai/bstream v0.0.0-20181106074824-b3251f7901ec // indirect
 	github.com/lightninglabs/gozmq v0.0.0-20191113021534-d20a764486bf
-	github.com/lightninglabs/neutrino v0.12.1
 	github.com/lightningnetwork/lnd/ticker v1.0.0
 	github.com/stretchr/testify v1.5.1
 	golang.org/x/crypto v0.0.0-20200510223506-06a226fb4e37

@@ -18,7 +18,7 @@ import (
 	"github.com/giangnamnabka/btcwallet/rpc/legacyrpc"
 	"github.com/giangnamnabka/btcwallet/wallet"
 	"github.com/giangnamnabka/btcwallet/walletdb"
-	"github.com/lightninglabs/neutrino"
+	"github.com/giangnamnabka/neutrino"
 )
 
 var (
