@@ -2,6 +2,8 @@
 // Use of this source code is governed by an ISC
 // license that can be found in the LICENSE file.
 
+// +build !js
+
 package prompt
 
 import (
@@ -12,8 +14,8 @@ import (
 	"os"
 	"strings"
 
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/internal/legacy/keystore"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/internal/legacy/keystore"
 	"golang.org/x/crypto/ssh/terminal"
 )
 

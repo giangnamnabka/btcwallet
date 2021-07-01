@@ -10,11 +10,11 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/giangnamnabka/btcd/txscript"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcutil/psbt"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil/psbt"
+	"github.com/btcsuite/btcwallet/waddrmgr"
 )
 
 var (
@@ -220,6 +220,7 @@ func TestFundPsbt(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			changeIndex, err := w.FundPsbt(
 				tc.packet, nil, 0, tc.feeRateSatPerKB,
+				CoinSelectionLargest,
 			)
 
 			// In any case, unlock the UTXO before continuing, we

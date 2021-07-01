@@ -7,10 +7,10 @@ package wtxmgr
 import (
 	"fmt"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcwallet/walletdb"
 )
 
 var (
@@ -187,7 +187,7 @@ func Example_basicUsage() {
 		fmt.Println(err)
 		return
 	}
-	s, err := Open(b, &chaincfg.TestNet4Params)
+	s, err := Open(b, &chaincfg.TestNet3Params)
 	if err != nil {
 		fmt.Println(err)
 		return

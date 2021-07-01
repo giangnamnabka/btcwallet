@@ -9,11 +9,11 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/giangnamnabka/btcd/btcjson"
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/rpcclient"
-	"github.com/giangnamnabka/btcd/wire"
+	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/rpcclient"
+	"github.com/btcsuite/btcd/wire"
 	"github.com/lightninglabs/gozmq"
 	"github.com/lightningnetwork/lnd/ticker"
 )
@@ -192,15 +192,14 @@ func NewBitcoindConn(cfg *BitcoindConfig) (*BitcoindConn, error) {
 	if chainInfo.Pruned {
 		prunedBlockDispatcher, err = NewPrunedBlockDispatcher(
 			&PrunedBlockDispatcherConfig{
-				ChainParams:      cfg.ChainParams,
-				NumTargetPeers:   cfg.PrunedModeMaxPeers,
-				Dial:             cfg.Dialer,
-				GetPeers:         client.GetPeerInfo,
-				PeerReadyTimeout: defaultPeerReadyTimeout,
-				RefreshPeersTicker: ticker.New(
-					defaultRefreshPeersInterval,
-				),
-				MaxRequestInvs: wire.MaxInvPerMsg,
+				ChainParams:        cfg.ChainParams,
+				NumTargetPeers:     cfg.PrunedModeMaxPeers,
+				Dial:               cfg.Dialer,
+				GetPeers:           client.GetPeerInfo,
+				GetNodeAddresses:   client.GetNodeAddresses,
+				PeerReadyTimeout:   defaultPeerReadyTimeout,
+				RefreshPeersTicker: ticker.New(defaultRefreshPeersInterval),
+				MaxRequestInvs:     wire.MaxInvPerMsg,
 			},
 		)
 		if err != nil {
@@ -480,10 +479,12 @@ func getCurrentNet(client *rpcclient.Client) (wire.BitcoinNet, error) {
 	}
 
 	switch *hash {
-	case *chaincfg.TestNet4Params.GenesisHash:
-		return chaincfg.TestNet4Params.Net, nil
+	case *chaincfg.TestNet3Params.GenesisHash:
+		return chaincfg.TestNet3Params.Net, nil
 	case *chaincfg.RegressionNetParams.GenesisHash:
 		return chaincfg.RegressionNetParams.Net, nil
+	case *chaincfg.SigNetParams.GenesisHash:
+		return chaincfg.SigNetParams.Net, nil
 	case *chaincfg.MainNetParams.GenesisHash:
 		return chaincfg.MainNetParams.Net, nil
 	default:

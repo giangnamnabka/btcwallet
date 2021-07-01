@@ -15,23 +15,23 @@ import (
 	"sync"
 	"time"
 
+	"github.com/btcsuite/btcd/blockchain"
+	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/btcjson"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/chain"
+	"github.com/btcsuite/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcwallet/wallet/txauthor"
+	"github.com/btcsuite/btcwallet/wallet/txrules"
+	"github.com/btcsuite/btcwallet/walletdb"
+	"github.com/btcsuite/btcwallet/walletdb/migration"
+	"github.com/btcsuite/btcwallet/wtxmgr"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/giangnamnabka/btcd/blockchain"
-	"github.com/giangnamnabka/btcd/btcec"
-	"github.com/giangnamnabka/btcd/btcjson"
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/txscript"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/chain"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
-	"github.com/giangnamnabka/btcwallet/wallet/txauthor"
-	"github.com/giangnamnabka/btcwallet/wallet/txrules"
-	"github.com/giangnamnabka/btcwallet/walletdb"
-	"github.com/giangnamnabka/btcwallet/walletdb/migration"
-	"github.com/giangnamnabka/btcwallet/wtxmgr"
 )
 
 const (
@@ -75,6 +75,19 @@ var (
 	// Namespace bucket keys.
 	waddrmgrNamespaceKey = []byte("waddrmgr")
 	wtxmgrNamespaceKey   = []byte("wtxmgr")
+)
+
+type CoinSelectionStrategy int
+
+const (
+	// CoinSelectionLargest always picks the largest available utxo to add
+	// to the transaction next.
+	CoinSelectionLargest CoinSelectionStrategy = iota
+
+	// CoinSelectionRandom randomly selects the next utxo to add to the
+	// transaction. This strategy prevents the creation of ever smaller
+	// utxos over time.
+	CoinSelectionRandom
 )
 
 // Wallet is a structure containing all the components for a
@@ -1125,13 +1138,14 @@ func logFilterBlocksResp(block wtxmgr.BlockMeta,
 
 type (
 	createTxRequest struct {
-		keyScope    *waddrmgr.KeyScope
-		account     uint32
-		outputs     []*wire.TxOut
-		minconf     int32
-		feeSatPerKB btcutil.Amount
-		dryRun      bool
-		resp        chan createTxResponse
+		keyScope              *waddrmgr.KeyScope
+		account               uint32
+		outputs               []*wire.TxOut
+		minconf               int32
+		feeSatPerKB           btcutil.Amount
+		coinSelectionStrategy CoinSelectionStrategy
+		dryRun                bool
+		resp                  chan createTxResponse
 	}
 	createTxResponse struct {
 		tx  *txauthor.AuthoredTx
@@ -1162,7 +1176,8 @@ out:
 			}
 			tx, err := w.txToOutputs(
 				txr.outputs, txr.keyScope, txr.account,
-				txr.minconf, txr.feeSatPerKB, txr.dryRun,
+				txr.minconf, txr.feeSatPerKB,
+				txr.coinSelectionStrategy, txr.dryRun,
 			)
 			heldUnlock.release()
 			txr.resp <- createTxResponse{tx, err}
@@ -1188,16 +1203,18 @@ out:
 // the database. A tx created with this set to true SHOULD NOT be broadcasted.
 func (w *Wallet) CreateSimpleTx(keyScope *waddrmgr.KeyScope, account uint32,
 	outputs []*wire.TxOut, minconf int32, satPerKb btcutil.Amount,
-	dryRun bool) (*txauthor.AuthoredTx, error) {
+	coinSelectionStrategy CoinSelectionStrategy, dryRun bool) (
+	*txauthor.AuthoredTx, error) {
 
 	req := createTxRequest{
-		keyScope:    keyScope,
-		account:     account,
-		outputs:     outputs,
-		minconf:     minconf,
-		feeSatPerKB: satPerKb,
-		dryRun:      dryRun,
-		resp:        make(chan createTxResponse),
+		keyScope:              keyScope,
+		account:               account,
+		outputs:               outputs,
+		minconf:               minconf,
+		feeSatPerKB:           satPerKb,
+		coinSelectionStrategy: coinSelectionStrategy,
+		dryRun:                dryRun,
+		resp:                  make(chan createTxResponse),
 	}
 	w.createTxRequests <- req
 	resp := <-req.resp
@@ -3156,7 +3173,8 @@ func (w *Wallet) TotalReceivedForAddr(addr btcutil.Address, minConf int32) (btcu
 // returns the transaction upon success.
 func (w *Wallet) SendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 	account uint32, minconf int32, satPerKb btcutil.Amount,
-	label string) (*wire.MsgTx, error) {
+	coinSelectionStrategy CoinSelectionStrategy, label string) (
+	*wire.MsgTx, error) {
 
 	// Ensure the outputs to be created adhere to the network's consensus
 	// rules.
@@ -3174,7 +3192,8 @@ func (w *Wallet) SendOutputs(outputs []*wire.TxOut, keyScope *waddrmgr.KeyScope,
 	// continue to re-broadcast the transaction upon restarts until it has
 	// been confirmed.
 	createdTx, err := w.CreateSimpleTx(
-		keyScope, account, outputs, minconf, satPerKb, false,
+		keyScope, account, outputs, minconf, satPerKb,
+		coinSelectionStrategy, false,
 	)
 	if err != nil {
 		return nil, err
@@ -3497,7 +3516,7 @@ func (w *Wallet) publishTransaction(tx *wire.MsgTx) (*chainhash.Hash, error) {
 	//
 	// This error is returned when broadcasting/sending a transaction to a
 	// btcd node that already has it in their mempool.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L953
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L953
 	case match(err, "already have transaction"):
 		fallthrough
 
@@ -3514,14 +3533,14 @@ func (w *Wallet) publishTransaction(tx *wire.MsgTx) (*chainhash.Hash, error) {
 	//
 	// This error is returned when sending a transaction that has already
 	// confirmed to a btcd/bitcoind node over RPC.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/rpcserver.go#L3355
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/rpcserver.go#L3355
 	// https://github.com/bitcoin/bitcoin/blob/9bf5768dd628b3a7c30dd42b5ed477a92c4d3540/src/node/transaction.cpp#L36
 	case rpcTxConfirmed:
 		fallthrough
 
 	// This error is returned when broadcasting a transaction that has
 	// already confirmed to a btcd node over the P2P network.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L1036
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L1036
 	case match(err, "transaction already exists"):
 		fallthrough
 
@@ -3551,20 +3570,20 @@ func (w *Wallet) publishTransaction(tx *wire.MsgTx) (*chainhash.Hash, error) {
 	// This error is returned from btcd when there is already a transaction
 	// not signaling replacement in the mempool that spends one of the
 	// referenced outputs.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L591
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L591
 	case match(err, "already spent"):
 		fallthrough
 
 	// This error is returned from btcd when a referenced output cannot be
 	// found, meaning it etiher has been spent or doesn't exist.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/blockchain/chain.go#L405
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/blockchain/chain.go#L405
 	case match(err, "already been spent"):
 		fallthrough
 
 	// This error is returned from btcd when a transaction is spending
 	// either output that is missing or already spent, and orphans aren't
 	// allowed.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L1409
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L1409
 	case match(err, "orphan transaction"):
 		fallthrough
 
@@ -3614,11 +3633,11 @@ func (w *Wallet) publishTransaction(tx *wire.MsgTx) (*chainhash.Hash, error) {
 
 	// Returned by btcd when replacement transaction was rejected for
 	// whatever reason.
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L841
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L854
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L875
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L896
-	// https://github.com/giangnamnabka/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L913
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L841
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L854
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L875
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L896
+	// https://github.com/btcsuite/btcd/blob/130ea5bddde33df32b06a1cdb42a6316eb73cff5/mempool/mempool.go#L913
 	case match(err, "replacement transaction"):
 		returnErr = &ErrReplacement{
 			backendError: err,
@@ -3665,6 +3684,29 @@ func (w *Wallet) Database() walletdb.DB {
 	return w.db
 }
 
+// CreateWithCallback is the same as Create with an added callback that will be
+// called in the same transaction the wallet structure is initialized.
+func CreateWithCallback(db walletdb.DB, pubPass, privPass, seed []byte,
+	params *chaincfg.Params, birthday time.Time,
+	cb func(walletdb.ReadWriteTx) error) error {
+
+	return create(
+		db, pubPass, privPass, seed, params, birthday, false, cb,
+	)
+}
+
+// CreateWatchingOnlyWithCallback is the same as CreateWatchingOnly with an
+// added callback that will be called in the same transaction the wallet
+// structure is initialized.
+func CreateWatchingOnlyWithCallback(db walletdb.DB, pubPass []byte,
+	params *chaincfg.Params, birthday time.Time,
+	cb func(walletdb.ReadWriteTx) error) error {
+
+	return create(
+		db, pubPass, nil, nil, params, birthday, true, cb,
+	)
+}
+
 // Create creates an new wallet, writing it to an empty database.  If the passed
 // seed is non-nil, it is used.  Otherwise, a secure random seed of the
 // recommended length is generated.
@@ -3672,7 +3714,7 @@ func Create(db walletdb.DB, pubPass, privPass, seed []byte,
 	params *chaincfg.Params, birthday time.Time) error {
 
 	return create(
-		db, pubPass, privPass, seed, params, birthday, false,
+		db, pubPass, privPass, seed, params, birthday, false, nil,
 	)
 }
 
@@ -3684,12 +3726,13 @@ func CreateWatchingOnly(db walletdb.DB, pubPass []byte,
 	params *chaincfg.Params, birthday time.Time) error {
 
 	return create(
-		db, pubPass, nil, nil, params, birthday, true,
+		db, pubPass, nil, nil, params, birthday, true, nil,
 	)
 }
 
 func create(db walletdb.DB, pubPass, privPass, seed []byte,
-	params *chaincfg.Params, birthday time.Time, isWatchingOnly bool) error {
+	params *chaincfg.Params, birthday time.Time, isWatchingOnly bool,
+	cb func(walletdb.ReadWriteTx) error) error {
 
 	if !isWatchingOnly {
 		// If a seed was provided, ensure that it is of valid length. Otherwise,
@@ -3725,7 +3768,17 @@ func create(db walletdb.DB, pubPass, privPass, seed []byte,
 		if err != nil {
 			return err
 		}
-		return wtxmgr.Create(txmgrNs)
+
+		err = wtxmgr.Create(txmgrNs)
+		if err != nil {
+			return err
+		}
+
+		if cb != nil {
+			return cb(tx)
+		}
+
+		return nil
 	})
 }
 

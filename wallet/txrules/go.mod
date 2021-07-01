@@ -1,8 +1,8 @@
-module github.com/giangnamnabka/btcwallet/wallet/txrules
+module github.com/btcsuite/btcwallet/wallet/txrules
 
 go 1.12
 
 require (
-	github.com/giangnamnabka/btcd v0.21.0-beta.0.20210510094638-1354d7f1a2de
-	github.com/giangnamnabka/btcutil v1.0.3-0.20210509081240-f80751d24cbd
+	github.com/btcsuite/btcd v0.0.0-20190824003749-130ea5bddde3
+	github.com/btcsuite/btcutil v0.0.0-20190425235716-9e5f4b9a998d
 )

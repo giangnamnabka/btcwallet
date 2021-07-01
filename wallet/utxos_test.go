@@ -8,10 +8,10 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/giangnamnabka/btcd/txscript"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/waddrmgr"
 )
 
 // TestFetchInputInfo checks that the wallet can gather information about an

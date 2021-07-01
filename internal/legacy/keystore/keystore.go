@@ -24,13 +24,13 @@ import (
 
 	"golang.org/x/crypto/ripemd160"
 
-	"github.com/giangnamnabka/btcd/btcec"
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/txscript"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcwallet/internal/legacy/rename"
+	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcwallet/internal/legacy/rename"
 )
 
 const (
@@ -473,9 +473,14 @@ func (net *netParams) ReadFrom(r io.Reader) (int64, error) {
 	case wire.MainNet:
 		*net = (netParams)(chaincfg.MainNetParams)
 	case wire.TestNet3:
-		*net = (netParams)(chaincfg.TestNet4Params)
+		*net = (netParams)(chaincfg.TestNet3Params)
 	case wire.SimNet:
 		*net = (netParams)(chaincfg.SimNetParams)
+
+	// The legacy key store won't be compatible with custom signets, only
+	// the main public one.
+	case chaincfg.SigNetParams.Net:
+		*net = (netParams)(chaincfg.SigNetParams)
 	default:
 		return n64, errors.New("unknown network")
 	}

@@ -5,12 +5,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/giangnamnabka/btcd/btcec"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
-	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/netparams"
+	"github.com/btcsuite/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcwallet/walletdb"
 )
 
 const (
@@ -37,7 +38,9 @@ func keyScopeFromPubKey(pubKey *hdkeychain.ExtendedKey,
 	// force the standard BIP-0049 derivation scheme (nested witness pubkeys
 	// everywhere), while a witness address type will force the standard
 	// BIP-0084 derivation scheme.
-	case waddrmgr.HDVersionMainNetBIP0044, waddrmgr.HDVersionTestNetBIP0044:
+	case waddrmgr.HDVersionMainNetBIP0044, waddrmgr.HDVersionTestNetBIP0044,
+		waddrmgr.HDVersionSimNetBIP0044:
+
 		if addrType == nil {
 			return waddrmgr.KeyScope{}, nil, errors.New("address " +
 				"type must be specified for account public " +
@@ -106,10 +109,19 @@ func (w *Wallet) isPubKeyForNet(pubKey *hdkeychain.ExtendedKey) bool {
 			version == waddrmgr.HDVersionMainNetBIP0049 ||
 			version == waddrmgr.HDVersionMainNetBIP0084
 
-	case wire.TestNet, wire.TestNet3:
+	case wire.TestNet, wire.TestNet3, netparams.SigNetWire(w.chainParams):
 		return version == waddrmgr.HDVersionTestNetBIP0044 ||
 			version == waddrmgr.HDVersionTestNetBIP0049 ||
 			version == waddrmgr.HDVersionTestNetBIP0084
+
+	// For simnet, we'll also allow the mainnet versions since simnet
+	// doesn't have defined versions for some of our key scopes, and the
+	// mainnet versions are usually used as the default regardless of the
+	// network/key scope.
+	case wire.SimNet:
+		return version == waddrmgr.HDVersionSimNetBIP0044 ||
+			version == waddrmgr.HDVersionMainNetBIP0049 ||
+			version == waddrmgr.HDVersionMainNetBIP0084
 
 	default:
 		return false
@@ -180,6 +192,24 @@ func (w *Wallet) ImportAccount(name string, accountPubKey *hdkeychain.ExtendedKe
 	masterKeyFingerprint uint32, addrType *waddrmgr.AddressType) (
 	*waddrmgr.AccountProperties, error) {
 
+	var accountProps *waddrmgr.AccountProperties
+	err := walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
+		ns := tx.ReadWriteBucket(waddrmgrNamespaceKey)
+		var err error
+		accountProps, err = w.importAccount(
+			ns, name, accountPubKey, masterKeyFingerprint, addrType,
+		)
+		return err
+	})
+	return accountProps, err
+}
+
+// importAccount is the internal implementation of ImportAccount -- one should
+// reference its documentation for this method.
+func (w *Wallet) importAccount(ns walletdb.ReadWriteBucket, name string,
+	accountPubKey *hdkeychain.ExtendedKey, masterKeyFingerprint uint32,
+	addrType *waddrmgr.AddressType) (*waddrmgr.AccountProperties, error) {
+
 	// Ensure we have a valid account public key.
 	if err := w.validateExtendedPubKey(accountPubKey, true); err != nil {
 		return nil, err
@@ -196,21 +226,80 @@ func (w *Wallet) ImportAccount(name string, accountPubKey *hdkeychain.ExtendedKe
 		return nil, err
 	}
 
-	// Store the account as watch-only within the database.
-	var accountProps *waddrmgr.AccountProperties
-	err = walletdb.Update(w.db, func(tx walletdb.ReadWriteTx) error {
-		ns := tx.ReadWriteBucket(waddrmgrNamespaceKey)
-		account, err := scopedMgr.NewAccountWatchingOnly(
-			ns, name, accountPubKey, masterKeyFingerprint,
-			addrSchema,
-		)
-		if err != nil {
-			return err
-		}
-		accountProps, err = scopedMgr.AccountProperties(ns, account)
-		return err
-	})
-	return accountProps, err
+	account, err := scopedMgr.NewAccountWatchingOnly(
+		ns, name, accountPubKey, masterKeyFingerprint, addrSchema,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return scopedMgr.AccountProperties(ns, account)
+}
+
+// ImportAccountDryRun serves as a dry run implementation of ImportAccount. This
+// method also returns the first N external and internal addresses, which can be
+// presented to users to confirm whether the account has been imported
+// correctly.
+func (w *Wallet) ImportAccountDryRun(name string,
+	accountPubKey *hdkeychain.ExtendedKey, masterKeyFingerprint uint32,
+	addrType *waddrmgr.AddressType, numAddrs uint32) (
+	*waddrmgr.AccountProperties, []waddrmgr.ManagedAddress,
+	[]waddrmgr.ManagedAddress, error) {
+
+	// Start a database transaction that we'll never commit and always
+	// rollback.
+	tx, err := w.db.BeginReadWriteTx()
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	defer func() {
+		_ = tx.Rollback()
+	}()
+	ns := tx.ReadWriteBucket(waddrmgrNamespaceKey)
+
+	// Import the account as usual.
+	accountProps, err := w.importAccount(
+		ns, name, accountPubKey, masterKeyFingerprint, addrType,
+	)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// Derive the external and internal addresses. Note that we could do
+	// this based on the provided accountPubKey alone, but we go through the
+	// ScopedKeyManager instead to ensure addresses will be derived as
+	// expected from the wallet's point-of-view.
+	manager, err := w.Manager.FetchScopedKeyManager(accountProps.KeyScope)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// The importAccount method above will cache the imported account within
+	// the scoped manager. Since this is a dry-run attempt, we'll want to
+	// invalidate the cache for it.
+	defer manager.InvalidateAccountCache(accountProps.AccountNumber)
+
+	externalAddrs, err := manager.NextExternalAddresses(
+		ns, accountProps.AccountNumber, numAddrs,
+	)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+	internalAddrs, err := manager.NextInternalAddresses(
+		ns, accountProps.AccountNumber, numAddrs,
+	)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	// Refresh the account's properties after generating the addresses.
+	accountProps, err = manager.AccountProperties(
+		ns, accountProps.AccountNumber,
+	)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return accountProps, externalAddrs, internalAddrs, nil
 }
 
 // ImportPublicKey imports a single derived public key into the address manager.

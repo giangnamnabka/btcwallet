@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	_ "github.com/giangnamnabka/btcwallet/walletdb/bdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
 )
 
 // TestCreateWatchingOnly checks that we can construct a watching-only
@@ -27,7 +27,7 @@ func TestCreateWatchingOnly(t *testing.T) {
 	pubPass := []byte("hello")
 
 	loader := NewLoader(
-		&chaincfg.TestNet4Params, dir, true, defaultDBTimeout, 250,
+		&chaincfg.TestNet3Params, dir, true, defaultDBTimeout, 250,
 	)
 	_, err = loader.CreateNewWatchingOnlyWallet(pubPass, time.Now())
 	if err != nil {

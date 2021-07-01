@@ -6,11 +6,11 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
-	_ "github.com/giangnamnabka/btcwallet/walletdb/bdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcwallet/waddrmgr"
+	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
 )
 
 const (

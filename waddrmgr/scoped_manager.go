@@ -5,13 +5,15 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/giangnamnabka/btcd/btcec"
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/internal/zero"
-	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/btcsuite/btcd/btcec"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/txscript"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/internal/zero"
+	"github.com/btcsuite/btcwallet/netparams"
+	"github.com/btcsuite/btcwallet/walletdb"
 )
 
 // HDVersion represents the different supported schemes of hierarchical
@@ -42,6 +44,11 @@ const (
 	// HDVersionTestNetBIP0084 is the HDVersion for BIP-0084 on the test
 	// network.
 	HDVersionTestNetBIP0084 HDVersion = 0x045f1cf6 // vpub
+
+	// HDVersionSimNetBIP0044 is the HDVersion for BIP-0044 on the
+	// simulation test network. There aren't any other versions defined for
+	// the simulation test network.
+	HDVersionSimNetBIP0044 HDVersion = 0x0420bd3a // spub
 )
 
 // DerivationPath represents a derivation path from a particular key manager's
@@ -1805,19 +1812,19 @@ func (s *ScopedKeyManager) importPublicKey(ns walletdb.ReadWriteBucket,
 	case PubKeyHash, WitnessPubKey:
 		addressID = btcutil.Hash160(serializedPubKey)
 
-	// case NestedWitnessPubKey:
-	// 	pubKeyHash := btcutil.Hash160(serializedPubKey)
-	// 	p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
-	// 		pubKeyHash, s.rootManager.chainParams,
-	// 	)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
-	// 	if err != nil {
-	// 		return err
-	// 	}
-	// 	addressID = btcutil.Hash160(witnessScript)
+	case NestedWitnessPubKey:
+		pubKeyHash := btcutil.Hash160(serializedPubKey)
+		p2wkhAddr, err := btcutil.NewAddressWitnessPubKeyHash(
+			pubKeyHash, s.rootManager.chainParams,
+		)
+		if err != nil {
+			return err
+		}
+		witnessScript, err := txscript.PayToAddrScript(p2wkhAddr)
+		if err != nil {
+			return err
+		}
+		addressID = btcutil.Hash160(witnessScript)
 
 	default:
 		return fmt.Errorf("unsupported address type %v", addrType)
@@ -2225,7 +2232,9 @@ func (s *ScopedKeyManager) cloneKeyWithVersion(key *hdkeychain.ExtendedKey) (
 			return nil, fmt.Errorf("unsupported scope %v", s.scope)
 		}
 
-	case wire.TestNet, wire.TestNet3:
+	case wire.TestNet, wire.TestNet3,
+		netparams.SigNetWire(s.rootManager.ChainParams()):
+
 		switch s.scope {
 		case KeyScopeBIP0044:
 			version = HDVersionTestNetBIP0044
@@ -2233,6 +2242,21 @@ func (s *ScopedKeyManager) cloneKeyWithVersion(key *hdkeychain.ExtendedKey) (
 			version = HDVersionTestNetBIP0049
 		case KeyScopeBIP0084:
 			version = HDVersionTestNetBIP0084
+		default:
+			return nil, fmt.Errorf("unsupported scope %v", s.scope)
+		}
+
+	case wire.SimNet:
+		switch s.scope {
+		case KeyScopeBIP0044:
+			version = HDVersionSimNetBIP0044
+		// We use the mainnet versions for simnet keys when the keys
+		// belong to a key scope which simnet doesn't have a defined
+		// version for.
+		case KeyScopeBIP0049Plus:
+			version = HDVersionMainNetBIP0049
+		case KeyScopeBIP0084:
+			version = HDVersionMainNetBIP0084
 		default:
 			return nil, fmt.Errorf("unsupported scope %v", s.scope)
 		}
@@ -2245,4 +2269,12 @@ func (s *ScopedKeyManager) cloneKeyWithVersion(key *hdkeychain.ExtendedKey) (
 	binary.BigEndian.PutUint32(versionBytes[:], uint32(version))
 
 	return key.CloneWithVersion(versionBytes[:])
+}
+
+// InvalidateAccountCache invalidates the cache for the given account, forcing a
+// database read to retrieve the account information.
+func (s *ScopedKeyManager) InvalidateAccountCache(account uint32) {
+	s.mtx.Lock()
+	defer s.mtx.Unlock()
+	delete(s.acctInfo, account)
 }

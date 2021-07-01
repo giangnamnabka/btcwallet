@@ -13,8 +13,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giangnamnabka/btcwallet/walletdb"
-	_ "github.com/giangnamnabka/btcwallet/walletdb/bdb"
+	"github.com/btcsuite/btcwallet/walletdb"
+	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
 )
 
 const (

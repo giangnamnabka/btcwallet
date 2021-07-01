@@ -13,12 +13,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcd/chaincfg/chainhash"
-	"github.com/giangnamnabka/btcd/wire"
-	"github.com/giangnamnabka/btcutil"
-	"github.com/giangnamnabka/btcwallet/walletdb"
-	_ "github.com/giangnamnabka/btcwallet/walletdb/bdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/chaincfg/chainhash"
+	"github.com/btcsuite/btcd/wire"
+	"github.com/btcsuite/btcutil"
+	"github.com/btcsuite/btcwallet/walletdb"
+	_ "github.com/btcsuite/btcwallet/walletdb/bdb"
 	"github.com/lightningnetwork/lnd/clock"
 )
 
@@ -93,7 +93,7 @@ func testStore() (*Store, walletdb.DB, func(), error) {
 		if err != nil {
 			return err
 		}
-		s, err = Open(ns, &chaincfg.TestNet4Params)
+		s, err = Open(ns, &chaincfg.TestNet3Params)
 		return err
 	})
 
@@ -713,7 +713,7 @@ func TestCoinbases(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	coinbaseMaturity := int32(chaincfg.TestNet4Params.CoinbaseMaturity)
+	coinbaseMaturity := int32(chaincfg.TestNet3Params.CoinbaseMaturity)
 
 	// Balance should be 0 if the coinbase is immature, 50 BTC at and beyond
 	// maturity.
@@ -1158,7 +1158,7 @@ func TestMoveMultipleToSameBlock(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	coinbaseMaturity := int32(chaincfg.TestNet4Params.CoinbaseMaturity)
+	coinbaseMaturity := int32(chaincfg.TestNet3Params.CoinbaseMaturity)
 
 	// Mine both transactions in the block that matures the coinbase.
 	bMaturity := BlockMeta{
@@ -1357,7 +1357,7 @@ func TestRemoveUnminedTx(t *testing.T) {
 	})
 
 	// Determine the maturity height for the coinbase output created.
-	coinbaseMaturity := int32(chaincfg.TestNet4Params.CoinbaseMaturity)
+	coinbaseMaturity := int32(chaincfg.TestNet3Params.CoinbaseMaturity)
 	maturityHeight := b100.Block.Height + coinbaseMaturity
 
 	// checkBalance is a helper function that compares the balance of the
@@ -1825,7 +1825,7 @@ func testInsertMempoolDoubleSpendTx(t *testing.T, first bool) {
 	// Then, we'll confirm either the first or second spend, depending on
 	// the boolean passed, with a height deep enough that allows us to
 	// succesfully spend the coinbase output.
-	coinbaseMaturity := int32(chaincfg.TestNet4Params.CoinbaseMaturity)
+	coinbaseMaturity := int32(chaincfg.TestNet3Params.CoinbaseMaturity)
 	bMaturity := BlockMeta{
 		Block: Block{Height: b100.Height + coinbaseMaturity},
 		Time:  time.Now(),
@@ -2014,7 +2014,7 @@ func TestInsertConfirmedDoubleSpendTx(t *testing.T) {
 
 	// Then, we'll insert the confirmed spend at a height deep enough that
 	// allows us to successfully spend the coinbase outputs.
-	coinbaseMaturity := int32(chaincfg.TestNet4Params.CoinbaseMaturity)
+	coinbaseMaturity := int32(chaincfg.TestNet3Params.CoinbaseMaturity)
 	bMaturity := BlockMeta{
 		Block: Block{Height: b100.Height + coinbaseMaturity},
 		Time:  time.Now(),

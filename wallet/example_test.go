@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/giangnamnabka/btcd/chaincfg"
-	"github.com/giangnamnabka/btcutil/hdkeychain"
-	"github.com/giangnamnabka/btcwallet/waddrmgr"
-	"github.com/giangnamnabka/btcwallet/walletdb"
+	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcutil/hdkeychain"
+	"github.com/btcsuite/btcwallet/waddrmgr"
+	"github.com/btcsuite/btcwallet/walletdb"
 )
 
 // defaultDBTimeout specifies the timeout value when opening the wallet
@@ -39,7 +39,7 @@ func testWallet(t *testing.T) (*Wallet, func()) {
 	privPass := []byte("world")
 
 	loader := NewLoader(
-		&chaincfg.TestNet4Params, dir, true, defaultDBTimeout, 250,
+		&chaincfg.TestNet3Params, dir, true, defaultDBTimeout, 250,
 	)
 	w, err := loader.CreateNewWallet(pubPass, privPass, seed, time.Now())
 	if err != nil {
@@ -70,7 +70,7 @@ func testWalletWatchingOnly(t *testing.T) (*Wallet, func()) {
 
 	pubPass := []byte("hello")
 	loader := NewLoader(
-		&chaincfg.TestNet4Params, dir, true, defaultDBTimeout, 250,
+		&chaincfg.TestNet3Params, dir, true, defaultDBTimeout, 250,
 	)
 	w, err := loader.CreateNewWatchingOnlyWallet(pubPass, time.Now())
 	if err != nil {

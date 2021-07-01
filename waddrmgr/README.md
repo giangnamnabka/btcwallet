@@ -1,8 +1,8 @@
 waddrmgr
 ========
 
-[![Build Status](https://travis-ci.org/giangnamnabka/btcwallet.png?branch=master)]
-(https://travis-ci.org/giangnamnabka/btcwallet)
+[![Build Status](https://travis-ci.org/btcsuite/btcwallet.png?branch=master)]
+(https://travis-ci.org/btcsuite/btcwallet)
 
 Package waddrmgr provides a secure hierarchical deterministic wallet address
 manager.
@@ -42,21 +42,21 @@ report.  Package waddrmgr is licensed under the liberal ISC license.
 
 ## Documentation
 
-[![GoDoc](https://godoc.org/github.com/giangnamnabka/btcwallet/waddrmgr?status.png)]
-(http://godoc.org/github.com/giangnamnabka/btcwallet/waddrmgr)
+[![GoDoc](https://godoc.org/github.com/btcsuite/btcwallet/waddrmgr?status.png)]
+(http://godoc.org/github.com/btcsuite/btcwallet/waddrmgr)
 
 Full `go doc` style documentation for the project can be viewed online without
 installing this package by using the GoDoc site here:
-http://godoc.org/github.com/giangnamnabka/btcwallet/waddrmgr
+http://godoc.org/github.com/btcsuite/btcwallet/waddrmgr
 
 You can also view the documentation locally once the package is installed with
 the `godoc` tool by running `godoc -http=":6060"` and pointing your browser to
-http://localhost:6060/pkg/github.com/giangnamnabka/btcwallet/waddrmgr
+http://localhost:6060/pkg/github.com/btcsuite/btcwallet/waddrmgr
 
 ## Installation
 
 ```bash
-$ go get github.com/giangnamnabka/btcwallet/waddrmgr
+$ go get github.com/btcsuite/btcwallet/waddrmgr
 ```
 
 Package waddrmgr is licensed under the [copyfree](http://copyfree.org) ISC
